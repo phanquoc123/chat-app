@@ -1,7 +1,9 @@
 import express from 'express';
+import { signIn, signUp, signOut} from '../controllers/authController.js';
 
 const router = express.Router();
-router.post('/signup', async (req, res) => {
-  // Call the signUp controller function here
-  res.send('Sign Up Endpoint');
-});
+router.post('/signup',signUp);
+router.post('/signin',signIn);
+router.post('/logout',signOut);
+
+export default router;
