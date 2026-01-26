@@ -121,11 +121,7 @@ export const signOut = async(req , res) => {
             return res.status(400).json({message: 'Refresh Token is required'});
         }
         await Session.findOneAndDelete({refreshToken});
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-        });
+        res.clearCookie("refreshToken");
         return res.status(200).json({message: 'Sign Out successful'});
     } catch (error) {
         return res.status(500).json({message: 'Internal Server Error'});

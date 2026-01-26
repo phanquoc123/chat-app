@@ -7,12 +7,14 @@ import { connectDB } from './libs/db.js'
 import authRoute from './routes/authRoute.js'
 import userRoute from './routes/userRoute.js'
 import { protectedRoute } from './middlewares/authMiddleware.js';
+import cors from 'cors';
 
 const port = process.env.PORT || 3000
 
 const app = express()
 app.use(express.json())
 app.use(cookieParser());
+app.use(cors({origin:process.env.CLIENT_URL, credentials:true}))
 
 app.get('/', (req, res) => {
   res.send('Hello World')
