@@ -5,7 +5,7 @@ import Session from '../models/Session.js';
 import crypto from 'crypto';
 
 
-const ACCESS_TOKEN_TTL = '30m';    
+const ACCESS_TOKEN_TTL = "30s";    
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000;
 
 export const signUp = async(req , res) => {
@@ -19,7 +19,7 @@ export const signUp = async(req , res) => {
         );
     }
 
-    //check if user exists
+    
     const userExists = await User.findOne({username});
     if(userExists) {
         return res.status(400).json(
@@ -29,10 +29,10 @@ export const signUp = async(req , res) => {
         );
     }
 
-    ///hash password
+    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    //create user
+    
     const newUser = await User.create({
         username,
         email,
@@ -126,4 +126,47 @@ export const signOut = async(req , res) => {
     } catch (error) {
         return res.status(500).json({message: 'Internal Server Error'});
     }
+}
+export const refreshToken = async(req,res)=>{
+    try {
+        const { refreshToken } = req.cookies
+        if(!refreshToken) {
+            return res.status(400).json(
+                {
+                 message: 'Refresh Token is ended'
+                }
+            );
+        }
+        const session = await Session.findOne({refreshToken});
+        if(!session) {
+            return res.status(403).json(
+                {
+                 message: 'Invalid Refresh Token'
+                }
+            );
+        }
+        if(session.expiresAt < new Date()) {
+            return res.status(403).json(
+                {
+                 message: 'Refresh Token has expired'
+                }
+            );
+        }
+        const accessToken = await jwt.sign({userId: session.userId},process.env.ACCESS_TOKEN_SECRET,{expiresIn: ACCESS_TOKEN_TTL});
+        return res.status(200).json({
+            message: 'Access Token refreshed successfully',
+            accessToken
+        });
+    } catch (error) {
+        console.error('Refresh Token error:', error);
+        return res.status(500).json(
+            {
+             message: 'Internal Server Error' 
+            }
+        );
+    }
+}
+
+export const test = async(req,res)=>{
+    return res.status(200).json({message: 'Test endpoint working'});
 }
