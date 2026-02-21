@@ -81,7 +81,7 @@ export const acceptFriendRequest = async(req,res) => {
         const requestId = req.params.id;
         const userId = req.user._id;
 
-        const friendRequest = await FriendRequest.findById({requestId});
+        const friendRequest = await FriendRequest.findById(requestId);
         if(!friendRequest){
             return res.status(404).json(
                 {
@@ -90,7 +90,7 @@ export const acceptFriendRequest = async(req,res) => {
             );
         }
 
-        if(friendRequest.to.toString() !== userId){
+        if(friendRequest.to.toString() !== userId.toString()){
             return res.status(403).json(
                 {
                  message: 'You are not authorized to accept this friend request'
@@ -98,14 +98,22 @@ export const acceptFriendRequest = async(req,res) => {
             );
         }
 
+       
+        let userA = friendRequest.from.toString();
+        let userB = friendRequest.to.toString();
+        
+        if(userA > userB){
+            [userA, userB] = [userB, userA];
+        }
+
         await Friend.create({
-            userA: friendRequest.from,
-            userB: friendRequest.to
+            userA,
+            userB
         })
 
         await FriendRequest.findByIdAndDelete(requestId);
 
-        const requestFromUser = await User.findById(friendRequest.from).select("_id, displayName, avatarUrl, email").lean();
+        const requestFromUser = await User.findById(friendRequest.from).select("_id displayName avatarUrl email").lean();
 
         return res.status(200).json(
             {
@@ -162,7 +170,28 @@ export const  declineFriendRequest = async(req,res) => {
 }
 export const getAllFriends = async(req,res) => {
     try {
-        
+        const userId = req.user._id;
+
+        const friendships = await Friend.find({
+            $or:[
+                { userA: userId },
+                { userB: userId }
+            ]
+        })
+        .populate('userA','_id displayName avatarUrl email')
+        .populate('userB','_id displayName avatarUrl email')
+        .lean();
+        if(friendships.length === 0){
+            return res.status(200).json({
+                message: 'No friends found',
+                data: []
+            });
+        }
+        const friends = friendships.map((friend) => friend.userA._id.toString() === userId.toString() ? friend.userB : friend.userA);
+        return res.status(200).json({
+            message: 'Friends retrieved successfully',
+            data: friends
+        });
     } catch (error) {
         console.error('Get All Friends error:', error);
         return res.status(500).json(
@@ -174,7 +203,17 @@ export const getAllFriends = async(req,res) => {
 }
 export const getFriendRequests = async(req,res) => {
     try {
-        
+        const userId = req.user._id;
+        const polulateFields = '_id username displayName avatarUrl'
+        const [sent, received] =await Promise.all([
+            FriendRequest.find({from:userId}).populate("to",polulateFields),
+            FriendRequest.find({to:userId}).populate("from",polulateFields)
+
+        ]
+          
+        )
+        return res.status(200).json({sent,received}
+        );
     } catch (error) {
         console.error('Get Friend Requests error:', error);
         return res.status(500).json(

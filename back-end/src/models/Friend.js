@@ -13,17 +13,8 @@ const friendSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Sorting is now handled in the controller before creating Friend records
+// No need for pre-save hook
 
-friendSchema.pre('save', function(next) {
-const a = this.userA.toString();
-const b = this.userB.toString();
-
-if(a > b){
-    this.userA = mongoose.Types.ObjectId(b);
-    this.userB = mongoose.Types.ObjectId(a);
-}
-
-next();
-})
 friendSchema.index({userA: 1, userB: 1}, {unique: true}); 
 export default mongoose.model("Friend", friendSchema);
