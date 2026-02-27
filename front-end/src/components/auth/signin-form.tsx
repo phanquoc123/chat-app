@@ -11,7 +11,7 @@ import { z } from "zod";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Username is required"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
 type SignInFormValues = z.infer<typeof signInSchema>;

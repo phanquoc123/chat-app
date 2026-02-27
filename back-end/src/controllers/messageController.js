@@ -18,6 +18,13 @@ export const sendDirectMessage = async (req, res) => {
       conversation = await Conversation.findById(conversationId);
     }
     if (!conversation) {
+      // Tái sử dụng conversation đã có giữa 2 user, không tạo mới
+      conversation = await Conversation.findOne({
+        type: "direct",
+        "participants.userId": { $all: [senderId, recipientId] },
+      });
+    }
+    if (!conversation) {
       conversation = await Conversation.create({
         type: "direct",
         participants: [
@@ -38,10 +45,7 @@ export const sendDirectMessage = async (req, res) => {
     updateConversationAfterMessage(conversation, message, senderId);
     await conversation.save();
 
-    return res.status(201).json({
-      message: "Message sent successfully",
-      data: message,
-    });
+    return res.status(201).json({ message });
   } catch (error) {
     console.error("Send Direct Message error:", error);
     return res.status(500).json({
