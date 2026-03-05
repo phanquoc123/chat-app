@@ -6,10 +6,12 @@ import { Separator } from "../ui/separator";
 import UserAvatar from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
 import GroupChatAvatar from "./GroupChatAvatar";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 export const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
   const { conversations, activeConversationId } = useChatStore();
   const { user } = useAuthStore();
+  const {onlineUsers} = useSocketStore();
   let otherUser: Participant | null = null;
   chat = chat ?? conversations.find(c => c._id === activeConversationId);
   if (!chat) {
@@ -38,7 +40,7 @@ export const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
             {chat.type === "direct" ? (
                 <>
              <UserAvatar type="sidebar" name={otherUser?.displayName || "Chat App"} avatarUrl={otherUser?.avatarUrl || undefined} />
-             <StatusBadge status="online"/>
+             <StatusBadge status={onlineUsers.includes(otherUser?._id.toString() ?? "") ? "online" : "offline"} />
                 </>
             ) : (
                 <>

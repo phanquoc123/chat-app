@@ -134,6 +134,45 @@ export const useChatStore = create<ChatState>()(
           console.error("Error when sending group message:", error);
         }
       },
+      async addMessage(message) {
+          try {
+            const {user} = useAuthStore.getState();
+            const {fetchMessages} = get();
+
+            message.isOwn = message.senderId === user?._id;
+            const conversationId = message.conversationId;
+
+            const prevItems = get().messages[conversationId]?.items ?? [];
+            if(prevItems.length === 0) {
+              await fetchMessages(conversationId);
+            }
+
+            set((state) => {
+              const currentItems = state.messages[conversationId]?.items ?? [];
+              if(currentItems.some(m => m._id === message._id)) {
+                return state;
+              }
+              return {
+                messages: {
+                  ...state.messages,
+                  [conversationId]:{
+                    items: [...currentItems, message],
+                    hasMore: state.messages[conversationId]?.hasMore ?? false,
+                    nextCursor: state.messages[conversationId]?.nextCursor ?? null,
+                  },
+                }
+              }
+            })
+          } catch (error) {
+            console.error("Error when adding new message:", error);
+          }
+        },
+
+        updateConversation: async (conversation) => {
+          set((state) => ({
+            conversations: state.conversations.map(c => c._id === conversation._id ? {...c, ...conversation} : c),
+          }));
+        },
     }),
     {
       name: "chat-storage",

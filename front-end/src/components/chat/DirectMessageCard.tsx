@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 import UserAvatar from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
 import UnreadCountBadge from "./UnreadCountBadge";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 export default function DirectMessageCard({ conver }: { conver: Conversation }) {
   const { user } = useAuthStore();
   const { activeConversationId, setActiveConversation, messages , fetchMessages } = useChatStore();
+  const {onlineUsers} = useSocketStore();
   if (!user) return null;
 
   const otherUser = conver.participants.find(p => p._id !== user._id);
@@ -36,7 +38,7 @@ export default function DirectMessageCard({ conver }: { conver: Conversation }) 
         leftSection={
         <>
         <UserAvatar type="sidebar" name={otherUser.displayName ?? ""} avatarUrl={otherUser.avatarUrl ?? undefined}/>
-        <StatusBadge status="online"/>
+        <StatusBadge status={onlineUsers.includes(otherUser?._id.toString() ?? "") ? "online" : "offline"} />
         {unreadCount > 0 ? <UnreadCountBadge unReadCount={unreadCount}/> : ""}
         </>}
         subtitle={

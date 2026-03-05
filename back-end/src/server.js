@@ -12,9 +12,11 @@ import conversationRoute from './routes/conversationRoute.js'
 import { protectedRoute } from './middlewares/authMiddleware.js';
 import cors from 'cors';
 
+import { app, httpServer } from './socket/index.js';
+
 const port = process.env.PORT || 3000
 
-const app = express()
+  
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({origin:process.env.CLIENT_URL, credentials:true}))
@@ -32,7 +34,7 @@ app.use('/api/messages', messageRoute)
 app.use('/api/conversations', conversationRoute)
 
 connectDB().then(() => {
-  app.listen(port, () => {
+  httpServer.listen(port, () => {
     console.log(`Server is running on ${port}`)
     console.log(`http://localhost:${port}`)
    

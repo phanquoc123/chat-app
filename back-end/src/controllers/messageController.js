@@ -1,6 +1,7 @@
-import { updateConversationAfterMessage } from "../utils/messageHelper.js";
+import { emitNewMessage, updateConversationAfterMessage } from "../utils/messageHelper.js";
 import Conversation from "../models/Convesation.js";
 import Message from "../models/Message.js";
+import { io } from "../socket/index.js";
 
 export const sendDirectMessage = async (req, res) => {
   try {
@@ -45,6 +46,8 @@ export const sendDirectMessage = async (req, res) => {
     updateConversationAfterMessage(conversation, message, senderId);
     await conversation.save();
 
+    emitNewMessage(io, conversation, message);
+
     return res.status(201).json({ message });
   } catch (error) {
     console.error("Send Direct Message error:", error);
@@ -72,6 +75,7 @@ export const sendGroupMessage = async (req, res) => {
     updateConversationAfterMessage(conversation, message, senderId)
 
     await conversation.save();
+    emitNewMessage(io, conversation, message);
 
     return res.status(200).json({message})
   } catch (error) {
@@ -81,3 +85,17 @@ export const sendGroupMessage = async (req, res) => {
     });
   }
 };
+
+export const getUserConversationsForSocket = async (userId) => {
+  try {
+    const conversations = await Conversation.find(
+      { "participants.userId": userId },
+      {_id:1}
+    );
+
+    return conversations.map(c => c._id.toString());
+  } catch (error) {
+    console.error("Get User Conversations for Socket error:", error);
+    return [];
+  }
+}
