@@ -39,7 +39,8 @@ export interface ChatState{
   sendGroupMessage:(conversationId: string, content: string, imageUrl?: string) => Promise<void>
 
   addMessage:(message: Message) => void;
-  updateConversation: (conversation: Conversation) => void;
+  updateConversation: (conversation: Partial<Conversation> & Pick<Conversation, "_id">) => void;
+  markAsSeen:() => Promise<void>;
 }
 
 export interface SocketState{

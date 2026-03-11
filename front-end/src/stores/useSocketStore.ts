@@ -30,8 +30,8 @@ export const useSocketStore = create<SocketState>((set,get) => ({
       set({ onlineUsers: userIds });
     })
 
-    socket.on("new-message", ({ message, conversation }) => {
-      const { addMessage, updateConversation } = useChatStore.getState();
+    socket.on("new-message", ({ message, conversation,unreadCounts  }) => {
+      const { addMessage, updateConversation, activeConversationId, markAsSeen } = useChatStore.getState();
 
       addMessage(message);
 
@@ -46,11 +46,31 @@ export const useSocketStore = create<SocketState>((set,get) => ({
         },
       };
 
-      updateConversation({
+       const updatedConversation = {
         ...conversation,
         lastMessage,
-      });
+        unreadCounts,
+      };
+
+      if(activeConversationId === message.conversationId) {
+        markAsSeen();
+      }
+      updateConversation(updatedConversation);
     })
+
+     // read message
+    socket.on("read-message", ({ conversation, lastMessage }) => {
+      const {updateConversation } = useChatStore.getState();
+      const updatedConversation = {
+        _id: conversation._id,
+        lastMessage,
+        lastMessageAt: conversation.lastMessageAt,
+        unreadCounts: conversation.unreadCounts,
+        seenBy: conversation.seenBy,
+      };
+
+      updateConversation(updatedConversation);
+    });
   },
   disconnect: () => {
     const existingSocket = get().socket;

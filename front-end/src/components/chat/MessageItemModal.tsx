@@ -14,8 +14,8 @@ interface MessageItemModalProps{
 
 export const MessageItemModal = ({message,index,messages,selectedConversation,lastMessageStatus} : MessageItemModalProps) => {
 
-  const prevMessage = messages[index - 1];
-  const isBreakGroup = index === 0 || prevMessage.senderId !== message.senderId || new Date(message.createdAt).getTime() - new Date(prevMessage?.createdAt || 0).getTime() > 5 * 60 * 1000;
+  const prevMessage = index +1 < messages.length ? messages[index + 1] : undefined;
+  const isBreakGroup = index === 0 || message.senderId !== prevMessage?.senderId || new Date(message.createdAt).getTime() - new Date(prevMessage?.createdAt || 0).getTime() > 5 * 60 * 1000;
 
   const participant = selectedConversation.participants.find(p => p._id.toString() === message.senderId.toString());
   return (

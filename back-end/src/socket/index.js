@@ -2,7 +2,7 @@ import {Server} from "socket.io";
 import express from "express";
 import http from "http";
 import { socketMiddleware } from "../middlewares/socketMiddleware.js";
-import { getUserConversationsForSocket } from "../controllers/messageController.js";
+import { getUserConversationsForSocket } from "../controllers/conversationController.js";
 const app = express();
 const httpServer = http.createServer(app);
 

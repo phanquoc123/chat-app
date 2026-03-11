@@ -94,19 +94,23 @@ export const useChatStore = create<ChatState>()(
           const conversationId = activeConversationId!;
           const messageWithOwn = { ...sentMessage, isOwn: sentMessage.senderId === user?._id };
 
-          set((state) => ({
-            conversations: state.conversations.map((c) =>
-              c._id === conversationId ? { ...c, seenBy: [] } : c
-            ),
-            messages: {
-              ...state.messages,
-              [conversationId]: {
-                items: [...(state.messages[conversationId]?.items ?? []), messageWithOwn],
-                hasMore: state.messages[conversationId]?.hasMore ?? false,
-                nextCursor: state.messages[conversationId]?.nextCursor ?? null,
+          set((state) => {
+            const currentItems = state.messages[conversationId]?.items ?? [];
+            if (currentItems.some(m => m._id === messageWithOwn._id)) return state;
+            return {
+              conversations: state.conversations.map((c) =>
+                c._id === conversationId ? { ...c, seenBy: [] } : c
+              ),
+              messages: {
+                ...state.messages,
+                [conversationId]: {
+                  items: [...currentItems, messageWithOwn],
+                  hasMore: state.messages[conversationId]?.hasMore ?? false,
+                  nextCursor: state.messages[conversationId]?.nextCursor ?? null,
+                },
               },
-            },
-          }));
+            };
+          });
         } catch (error) {
           console.error("Error when sending direct message:", error);
         }
@@ -117,19 +121,23 @@ export const useChatStore = create<ChatState>()(
           const sentMessage = await chatService.sendGroupMessage(conversationId, content, imageUrl);
           const messageWithOwn = { ...sentMessage, isOwn: sentMessage.senderId === user?._id };
 
-          set((state) => ({
-            conversations: state.conversations.map((c) =>
-              c._id === conversationId ? { ...c, seenBy: [] } : c
-            ),
-            messages: {
-              ...state.messages,
-              [conversationId]: {
-                items: [...(state.messages[conversationId]?.items ?? []), messageWithOwn],
-                hasMore: state.messages[conversationId]?.hasMore ?? false,
-                nextCursor: state.messages[conversationId]?.nextCursor ?? null,
+          set((state) => {
+            const currentItems = state.messages[conversationId]?.items ?? [];
+            if (currentItems.some(m => m._id === messageWithOwn._id)) return state;
+            return {
+              conversations: state.conversations.map((c) =>
+                c._id === conversationId ? { ...c, seenBy: [] } : c
+              ),
+              messages: {
+                ...state.messages,
+                [conversationId]: {
+                  items: [...currentItems, messageWithOwn],
+                  hasMore: state.messages[conversationId]?.hasMore ?? false,
+                  nextCursor: state.messages[conversationId]?.nextCursor ?? null,
+                },
               },
-            },
-          }));
+            };
+          });
         } catch (error) {
           console.error("Error when sending group message:", error);
         }
@@ -168,11 +176,46 @@ export const useChatStore = create<ChatState>()(
           }
         },
 
-        updateConversation: async (conversation) => {
-          set((state) => ({
-            conversations: state.conversations.map(c => c._id === conversation._id ? {...c, ...conversation} : c),
-          }));
-        },
+      updateConversation: (conversation) => {
+        set((state) => ({
+          conversations: state.conversations.map((c) =>
+            c._id === conversation._id ? { ...c, ...conversation } : c
+          ),
+        }));
+      },
+        markAsSeen: async () => {
+          try {
+            const {user} = useAuthStore.getState();
+            const {activeConversationId, conversations} = get();
+            if(!activeConversationId || !user) return;
+
+            const conversation = conversations.find(c => c._id === activeConversationId);
+            if(!conversation) return;
+
+            if ((conversation.unreadCounts?.[user._id] ?? 0) === 0) {
+            return;
+          }
+
+            await chatService.markAsSeen(activeConversationId);
+            set((state) => ({
+                    conversations:state.conversations.map(c => {
+                      if(c._id === activeConversationId && c.lastMessage) {
+                        return {
+                          ...c,
+                          unreadCounts: {
+                            ...c.unreadCounts,
+                            [user._id]: 0
+                          }
+                        };
+                      }
+                      return c;
+                    })
+                  }
+                ))
+          } catch (error) {
+            console.error("Error when marking conversation as seen:", error);
+          }
+        }
     }),
     {
       name: "chat-storage",

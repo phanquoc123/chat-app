@@ -8,8 +8,20 @@ import { ChatWindowBody } from "./ChatWindowBody";
 import MessageInput from "./MessageInput";
 
 export default function ChatWindowLayout() {
-  const { activeConversationId, conversations, messageLoading : loading, messages, fetchMessages } = useChatStore();
+  const { activeConversationId, conversations, messageLoading : loading, messages, fetchMessages, markAsSeen } = useChatStore();
   const selectedConversation = conversations.find((c) => c._id === activeConversationId) ?? null
+
+  useEffect(()=> {
+    if(!selectedConversation) return;
+    const markSeen = async () => {
+      try {
+        await markAsSeen();
+      } catch (error) {
+        console.error("Error when marking messages as seen:", error);
+      }
+    }
+    markSeen();
+  },[selectedConversation,markAsSeen])
 
   useEffect(() => {
     if (!activeConversationId) return;

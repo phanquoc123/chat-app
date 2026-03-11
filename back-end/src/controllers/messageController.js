@@ -86,16 +86,3 @@ export const sendGroupMessage = async (req, res) => {
   }
 };
 
-export const getUserConversationsForSocket = async (userId) => {
-  try {
-    const conversations = await Conversation.find(
-      { "participants.userId": userId },
-      {_id:1}
-    );
-
-    return conversations.map(c => c._id.toString());
-  } catch (error) {
-    console.error("Get User Conversations for Socket error:", error);
-    return [];
-  }
-}

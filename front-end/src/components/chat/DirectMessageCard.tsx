@@ -17,7 +17,7 @@ export default function DirectMessageCard({ conver }: { conver: Conversation }) 
   const otherUser = conver.participants.find(p => p._id !== user._id);
   if (!otherUser) return null;
 
-  const unreadCount = conver.unreadCounts[user._id];
+  const unreadCount = conver.unreadCounts?.[user._id] ?? 0;
   const lastMessage = conver.lastMessage?.content ?? "";
 
   const handleSelectConversation = async (id: string) => {
