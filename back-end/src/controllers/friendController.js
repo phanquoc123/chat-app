@@ -16,7 +16,6 @@ export const sendFriendRequest = async(req,res) => {
                 }
             );
         }
-
         const userExist = await User.exists({ _id: to });
         if(!userExist){
             return res.status(404).json(
