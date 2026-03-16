@@ -54,10 +54,26 @@ export const createConversation = async (req, res) => {
         {path: "seenBy", select:"displayName avatarUrl"},
         {path: "lastMessage.senderId", select:"displayName avatarUrl"}
     ])
+    const participants = (conversation.participants || []).map((p) =>({
+            _id:p.userId?._id,
+            displayName:p.userId?.displayName,
+            avatarUrl:p.userId?.avatarUrl ?? null,
+            joinedAt:p.joinedAt,
+          }))
+
+    const formatted = {...conversation.toObject(),
+            participants
+          }
+
+    if(type === 'group'){
+        memberIds.forEach((userId) => {
+            io.to(userId).emit("new-group",formatted)
+        })
+    }
 
     return res.status(201).json({
-        message:"Conversation create successfully",
-        conversation
+     
+        conversation: formatted
     })
   } catch (error) {
     console.error("Error create conversation:", error)

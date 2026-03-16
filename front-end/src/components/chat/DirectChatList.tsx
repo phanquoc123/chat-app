@@ -30,6 +30,7 @@ function deduplicateDirectConversations(
 
 export default function DirectChatList() {
   const { conversations } = useChatStore();
+
   const { user } = useAuthStore();
 
   if (!conversations?.length || !user) return null;

@@ -23,6 +23,10 @@ export const friendService = {
        await api.post(`/friends/requests/${requestId}/decline`);
       
     },
+    async getFriends() {
+      const res = await api.get("/friends");
+      return res.data.data;
+    }
     
    
 }

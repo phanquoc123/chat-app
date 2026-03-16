@@ -11,7 +11,7 @@ export default function GroupChatCard({conver} : {conver: Conversation}) {
     if(!user) return null
     const { activeConversationId, setActiveConversation, messages, fetchMessages } = useChatStore();
 
-    const unreadCount = conver.unreadCounts[user._id]
+    const unreadCount = conver.unreadCounts?.[user._id] ?? 0
     const name = conver.group?.name ?? ""   
     const handleSelectConversation = async(id:string) => {
         setActiveConversation(id)

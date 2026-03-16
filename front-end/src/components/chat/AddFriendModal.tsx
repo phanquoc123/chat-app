@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { UserPlus } from "lucide-react";
-import SearchForm from "../AddFriendModal/SearchForm";
-import SendFriendRequest from "../AddFriendModal/SendFriendRequest";
+import SearchForm from "../addFriendModal/SearchForm";
+import SendFriendRequest from "../addFriendModal/SendFriendRequest";
 import type { User } from "@/types/user";
 import { useFriendStore } from "@/stores/useFriendStore";
 import { useForm } from "react-hook-form";
@@ -66,7 +66,7 @@ export default function AddFriendModal() {
 
       handleCancel();
     } catch (error) {
-      console.error("Lỗi xảy ra khi gửi request từ form", error);
+      console.error("Error sending friend request:", error);
     }
   });
 

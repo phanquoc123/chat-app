@@ -40,7 +40,7 @@ export const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
             {chat.type === "direct" ? (
                 <>
              <UserAvatar type="sidebar" name={otherUser?.displayName || "Chat App"} avatarUrl={otherUser?.avatarUrl || undefined} />
-             <StatusBadge status={onlineUsers.includes(otherUser?._id.toString() ?? "") ? "online" : "offline"} />
+             <StatusBadge status={onlineUsers.includes(otherUser?._id?.toString() ?? "") ? "online" : "offline"} />
                 </>
             ) : (
                 <>

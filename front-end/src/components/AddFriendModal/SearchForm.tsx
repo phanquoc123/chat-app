@@ -70,6 +70,7 @@ export default function SearchForm({
           type="button"
           variant="ghost"
           size="sm"
+          className="cursor-pointer"
           onClick={onCancel}
           disabled={loading}
         >
@@ -78,6 +79,7 @@ export default function SearchForm({
         <Button
           type="submit"
           size="sm"
+          className="cursor-pointer"
           disabled={loading || !username?.trim()}
         >
           {loading ? "Searching..." : "Search"}

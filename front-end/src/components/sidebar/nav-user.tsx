@@ -82,10 +82,7 @@ export function NavUser({
             </DropdownMenuLabel>
           
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-               <UserIcon className="text-muted-foreground dark:group-focus:text-accent-foreground"/>
-                Account
-              </DropdownMenuItem>
+             
               <DropdownMenuItem
               onClick={() => setFriendRequestsOpen(true)}>
               <Bell className="text-muted-foreground dark:group-focus:text-accent-foreground"/>

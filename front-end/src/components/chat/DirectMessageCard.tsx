@@ -14,7 +14,7 @@ export default function DirectMessageCard({ conver }: { conver: Conversation }) 
   const {onlineUsers} = useSocketStore();
   if (!user) return null;
 
-  const otherUser = conver.participants.find(p => p._id !== user._id);
+  const otherUser = conver.participants.find(p => p._id && p._id !== user._id);
   if (!otherUser) return null;
 
   const unreadCount = conver.unreadCounts?.[user._id] ?? 0;
@@ -38,7 +38,7 @@ export default function DirectMessageCard({ conver }: { conver: Conversation }) 
         leftSection={
         <>
         <UserAvatar type="sidebar" name={otherUser.displayName ?? ""} avatarUrl={otherUser.avatarUrl ?? undefined}/>
-        <StatusBadge status={onlineUsers.includes(otherUser?._id.toString() ?? "") ? "online" : "offline"} />
+        <StatusBadge status={onlineUsers.includes(otherUser._id?.toString() ?? "") ? "online" : "offline"} />
         {unreadCount > 0 ? <UnreadCountBadge unReadCount={unreadCount}/> : ""}
         </>}
         subtitle={

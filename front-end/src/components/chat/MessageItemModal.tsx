@@ -29,7 +29,7 @@ export const MessageItemModal = ({message,index,messages,selectedConversation,la
       )}
 
       <div className={cn("max-w-xs lg:max-w-md space-y-1 flex flex-col", message.isOwn ? "items-end" : "items-start")}>
-        <Card className={cn("p-3", message.isOwn ? "bg-blue-500 text-white" : "bg-gray-100")}>
+        <Card className={cn("p-3", message.isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100")}>
           <p className="text-sm leading-relaxed wrap-break-word">{message.content}</p>
         </Card>
 
