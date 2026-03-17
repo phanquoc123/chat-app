@@ -12,7 +12,25 @@ export default function GroupChatCard({conver} : {conver: Conversation}) {
     const { activeConversationId, setActiveConversation, messages, fetchMessages } = useChatStore();
 
     const unreadCount = conver.unreadCounts?.[user._id] ?? 0
-    const name = conver.group?.name ?? ""   
+    const name = conver.group?.name ?? ""
+
+    const isOwnLastMessage = conver.lastMessage?.sender?._id === user._id;
+    const lastMessageSender = conver.lastMessage
+      ? conver.participants.find(p => p._id === conver.lastMessage?.sender?._id)
+      : null;
+    const senderName = lastMessageSender?.displayName ?? "";
+    const imgCount = conver.lastMessage?.imageCount ?? 0;
+    const imgLabel = `sent ${imgCount} image${imgCount > 1 ? "s" : ""}`;
+    const lastMessageText = conver.lastMessage
+      ? imgCount > 0
+        ? isOwnLastMessage ? `You: ${imgLabel}` : `${senderName} ${imgLabel}`
+        : isOwnLastMessage
+          ? `You: ${conver.lastMessage.content ?? ""}`
+          : senderName
+            ? `${senderName}: ${conver.lastMessage.content ?? ""}`
+            : conver.lastMessage.content ?? ""
+      : `${conver.participants.length} Members`;
+
     const handleSelectConversation = async(id:string) => {
         setActiveConversation(id)
         if(!messages){
@@ -34,10 +52,8 @@ export default function GroupChatCard({conver} : {conver: Conversation}) {
           <GroupChatAvatar participants={conver.participants} type="chat"/>
           </>}
           subtitle={
-            <p
-           className="text-sm truncate text-muted-foreground"
-            >
-             {conver.participants.length} Member
+            <p className="text-sm truncate text-muted-foreground">
+             {lastMessageText}
             </p>
           }
         />

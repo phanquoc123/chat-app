@@ -36,8 +36,8 @@ export interface ChatState{
   setActiveConversation: (id: string | null) => void;
   fetchConversation: () => Promise<void>
   fetchMessages:(conversationId?: string ) => Promise<void>
-  sendDirectMessage:(conversationId: string, content: string, imageUrl?: string) => Promise<void>
-  sendGroupMessage:(conversationId: string, content: string, imageUrl?: string) => Promise<void>
+  sendDirectMessage:(conversationId: string, content: string, images?: string[]) => Promise<void>
+  sendGroupMessage:(conversationId: string, content: string, images?: string[]) => Promise<void>
 
   addMessage:(message: Message) => void;
   updateConversation: (conversation: Partial<Conversation> & Pick<Conversation, "_id">) => void;

@@ -18,12 +18,12 @@ export const chatService = {
         const res = await api.get(`/conversations/${id}/messages?limit=${pageLimit}&cursor=${cursor}`);
         return {messages : res.data.messages , cursor:res.data.nextCursor}
     },
-    async sendDirectMessage(recipientId: string, content: string ="", imageUrl?: string, conversationId?: string) : Promise<Message>{
-        const res = await api.post(`/messages/direct`, {recipientId, content, imageUrl, conversationId});
+    async sendDirectMessage(recipientId: string, content: string ="", images?: string[], conversationId?: string) : Promise<Message>{
+        const res = await api.post(`/messages/direct`, {recipientId, content, images, conversationId});
         return res.data.message;
     },
-    async sendGroupMessage(conversationId: string, content: string ="", imageUrl?: string) : Promise<Message>{
-        const res = await api.post(`/messages/group`, {conversationId, content, imageUrl});
+    async sendGroupMessage(conversationId: string, content: string ="", images?: string[]) : Promise<Message>{
+        const res = await api.post(`/messages/group`, {conversationId, content, images});
         return res.data.message;
     },
     async markAsSeen(conversationId: string) : Promise<void>{

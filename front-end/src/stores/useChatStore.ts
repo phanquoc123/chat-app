@@ -88,11 +88,11 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      sendDirectMessage: async (recipientId, content, imageUrl) => {
+      sendDirectMessage: async (recipientId, content, images) => {
         try {
           const { activeConversationId } = get();
           const { user } = useAuthStore.getState();
-          const sentMessage = await chatService.sendDirectMessage(recipientId, content, imageUrl, activeConversationId || undefined);
+          const sentMessage = await chatService.sendDirectMessage(recipientId, content, images, activeConversationId || undefined);
           const conversationId = activeConversationId!;
           const messageWithOwn = { ...sentMessage, isOwn: sentMessage.senderId === user?._id };
 
@@ -117,10 +117,10 @@ export const useChatStore = create<ChatState>()(
           console.error("Error when sending direct message:", error);
         }
       },
-      sendGroupMessage: async (conversationId, content, imageUrl) => {
+      sendGroupMessage: async (conversationId, content, images) => {
         try {
           const { user } = useAuthStore.getState();
-          const sentMessage = await chatService.sendGroupMessage(conversationId, content, imageUrl);
+          const sentMessage = await chatService.sendGroupMessage(conversationId, content, images);
           const messageWithOwn = { ...sentMessage, isOwn: sentMessage.senderId === user?._id };
 
           set((state) => {

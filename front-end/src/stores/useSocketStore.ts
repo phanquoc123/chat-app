@@ -30,7 +30,7 @@ export const useSocketStore = create<SocketState>((set,get) => ({
       set({ onlineUsers: userIds });
     })
 
-    socket.on("new-message", ({ message, conversation,unreadCounts  }) => {
+    socket.on("new-message", ({ message, conversation }) => {
       const { addMessage, updateConversation, activeConversationId, markAsSeen } = useChatStore.getState();
 
       addMessage(message);
@@ -38,6 +38,7 @@ export const useSocketStore = create<SocketState>((set,get) => ({
       const lastMessage = {
         _id: message._id,
         content: message.content,
+        imageCount: message.images?.length || 0,
         createdAt: message.createdAt,
         sender: {
           _id: message.senderId,
@@ -46,16 +47,16 @@ export const useSocketStore = create<SocketState>((set,get) => ({
         },
       };
 
-       const updatedConversation = {
+      const updatedConversation = {
         ...conversation,
         lastMessage,
-        unreadCounts,
       };
+
+      updateConversation(updatedConversation);
 
       if(activeConversationId === message.conversationId) {
         markAsSeen();
       }
-      updateConversation(updatedConversation);
     })
 
      // read message

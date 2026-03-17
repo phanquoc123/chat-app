@@ -18,7 +18,11 @@ export default function DirectMessageCard({ conver }: { conver: Conversation }) 
   if (!otherUser) return null;
 
   const unreadCount = conver.unreadCounts?.[user._id] ?? 0;
-  const lastMessage = conver.lastMessage?.content ?? "";
+  const isOwnLastMessage = conver.lastMessage?.sender?._id === user._id;
+  const imgCount = conver.lastMessage?.imageCount ?? 0;
+  const lastMessageText = imgCount > 0
+    ? isOwnLastMessage ? `You: sent ${imgCount} image${imgCount > 1 ? "s" : ""}` : `${otherUser.displayName} sent ${imgCount} image${imgCount > 1 ? "s" : ""}`
+    : conver.lastMessage?.content ?? "";
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
@@ -48,7 +52,7 @@ export default function DirectMessageCard({ conver }: { conver: Conversation }) 
               unreadCount > 0 ? "text-foreground font-medium" : "text-muted-foreground",
             )}
           >
-            {lastMessage}
+            {lastMessageText}
           </p>
         }
       />

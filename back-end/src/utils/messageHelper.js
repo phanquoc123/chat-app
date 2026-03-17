@@ -5,6 +5,7 @@ export const updateConversationAfterMessage = (conversation, message, senderId) 
     lastMessage:{
         _id: message._id,
         content:message.content,
+        imageCount: message.images?.length || 0,
         senderId,
         createdAt:message.createdAt
     }

@@ -5,21 +5,20 @@ import { io } from "../socket/index.js";
 
 export const sendDirectMessage = async (req, res) => {
   try {
-    const { recipientId, conversationId, content } = req.body;
+    const { recipientId, conversationId, content, images } = req.body;
     const senderId = req.user._id;
 
     let conversation;
 
-    if (!content) {
+    if (!content && (!images || images.length === 0)) {
       return res.status(400).json({
-        message: "Message content cannot be empty",
+        message: "Message must have content or image",
       });
     }
     if (conversationId) {
       conversation = await Conversation.findById(conversationId);
     }
     if (!conversation) {
-      // Tái sử dụng conversation đã có giữa 2 user, không tạo mới
       conversation = await Conversation.findOne({
         type: "direct",
         "participants.userId": { $all: [senderId, recipientId] },
@@ -40,7 +39,8 @@ export const sendDirectMessage = async (req, res) => {
     const message = await Message.create({
       conversationId: conversation._id,
       senderId,
-      content,
+      content: content || null,
+      images: images || [],
     });
 
     updateConversationAfterMessage(conversation, message, senderId);
@@ -58,18 +58,19 @@ export const sendDirectMessage = async (req, res) => {
 };
 export const sendGroupMessage = async (req, res) => {
   try {
-    const { conversationId, content } = req.body;
+    const { conversationId, content, images } = req.body;
     const senderId = req.user._id;
     const conversation = req.conversation;
 
-    if(!content){
-      return res.status(400).json({message :"Content is missing"})
+    if(!content && (!images || images.length === 0)){
+      return res.status(400).json({message :"Message must have content or image"})
     }
 
     const message = await Message.create({
         conversationId,
         senderId,
-        content 
+        content: content || null,
+        images: images || [],
     })
 
     updateConversationAfterMessage(conversation, message, senderId)

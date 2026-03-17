@@ -18,7 +18,8 @@ export interface Group {
 
 export interface LastMessage {
   _id: string;
-  content: string;
+  content: string | null;
+  imageCount?: number;
   createdAt: string;
   sender: {
     _id: string;
@@ -49,7 +50,7 @@ export interface Message {
   conversationId: string;
   senderId: string;
   content: string | null;
-  imgUrl?: string | null;
+  images?: string[];
   updatedAt?: string | null;
   createdAt: string;
   isOwn?: boolean;

@@ -30,7 +30,22 @@ export const MessageItemModal = ({message,index,messages,selectedConversation,la
 
       <div className={cn("max-w-xs lg:max-w-md space-y-1 flex flex-col", message.isOwn ? "items-end" : "items-start")}>
         <Card className={cn("p-3", message.isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100")}>
-          <p className="text-sm leading-relaxed wrap-break-word">{message.content}</p>
+          {message.images && message.images.length > 0 && (
+            <div className={cn("flex flex-wrap gap-1", message.images.length > 1 && "mb-1")}>
+              {message.images.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt={`image ${i + 1}`}
+                  className="max-w-full max-h-64 rounded-lg object-cover cursor-pointer"
+                  onClick={() => window.open(src, "_blank")}
+                />
+              ))}
+            </div>
+          )}
+          {message.content && (
+            <p className="text-sm leading-relaxed wrap-break-word">{message.content}</p>
+          )}
         </Card>
 
         {isBreakGroup && (
