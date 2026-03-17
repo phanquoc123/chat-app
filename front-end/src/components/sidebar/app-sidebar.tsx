@@ -25,12 +25,16 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import DirectChatList from "../chat/DirectChatList";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { NavUser } from "./nav-user";
+import { useChatStore } from "@/stores/useChatStore";
+import ConversationSkelaton from "../skeleton/ConversationSkelaton";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 
   const {isDark, toggleTheme} = useThemeStore()
   const {user} = useAuthStore();
+
+  const { conversationLoading }  = useChatStore();
   return (
     <Sidebar
       variant="inset"
@@ -80,7 +84,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <NewGroupChatModal />
           </SidebarGroupAction>
           <SidebarGroupContent>
-            <GroupChatList />
+           {conversationLoading ? <ConversationSkelaton/> : <GroupChatList />} 
           </SidebarGroupContent>
         </SidebarGroup>
         {/* friends */}
@@ -93,7 +97,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <AddFriendModal />
           </SidebarGroupAction>
           <SidebarGroupContent>
-            <DirectChatList />
+              {conversationLoading ? <ConversationSkelaton/> :    <DirectChatList />} 
+         
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

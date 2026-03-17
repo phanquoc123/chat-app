@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useChatStore } from "@/stores/useChatStore";
 import { ChatWelcomeScreen } from "./ChatWelcomeScreen";
-import { ChatWindowSkelaton } from "./ChatWindowSkelaton";
+import { ChatWindowSkelaton } from "../skeleton/ChatWindowSkelaton";
 import { SidebarInset } from "../ui/sidebar";
 import { ChatWindowHeader } from "./ChatWindowHeader";
 import { ChatWindowBody } from "./ChatWindowBody";
